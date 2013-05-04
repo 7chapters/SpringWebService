@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:sws="http://www.springframework.org/schema/web-services"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/jee
+           http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+       	   http://www.springframework.org/schema/web-services 
+       	   http://www.springframework.org/schema/web-services/web-services-1.5.xsd
+       	   http://www.springframework.org/schema/oxm 
+       	   http://www.springframework.org/schema/oxm/spring-oxm-1.5.xsd">
+ -->
+ <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sws="http://www.springframework.org/schema/web-services"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-2.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd">
+       	   
+ 	
+	<bean id="httpMsgSender" class="org.springframework.ws.transport.http.CommonsHttpMessageSender">
+		<property name="connectionTimeout" value="8000"/>
+	</bean>
+
+	<oxm:jaxb2-marshaller id="holidayMarshaller" contextPath="com.mycompany.hr.schemas"/>
+	<bean id="wsGatewaySupport" class="org.springframework.ws.client.core.WebServiceTemplate">
+		<property name="marshaller" ref="holidayMarshaller"/>
+        <property name="unmarshaller" ref="holidayMarshaller"/>
+        <property name="messageSenders">
+        	<list>
+        		<ref bean="httpMsgSender"/>
+        	</list>
+        </property>
+	</bean>
+</beans>
