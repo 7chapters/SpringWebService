@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xmlns:sws="http://www.springframework.org/schema/web-services"
+	xsi:schemaLocation="http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-2.0.xsd">
+
+	<!-- Spring Web Services Endpoint Interceptors -->
+	<sws:interceptors>
+		<!-- Log the WS messages using this interceptor -->
+		<bean id="loggingInterceptor"
+			class="org.springframework.ws.server.endpoint.interceptor.PayloadLoggingInterceptor">
+			<property name="loggerName" value="com.xxx.tsc.ws.log.PWOWSPayloadLogger" />
+		</bean>
+
+		<!-- Schema validation -->
+		<bean id="validatingInterceptor"
+			class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
+			<property name="schemas">
+				<list>
+					<value>classpath:pinacle-domain-types-v1.0.xsd</value>
+					<value>classpath:pinacle-query-message-types-v1.0.xsd</value>
+				</list>
+			</property>
+			<!-- Paramterize these two parameters so that we can change this at runtime -->
+			<property name="validateRequest" value="${WS.QUERY.INBOUND.VALIDATE.REQUEST}" />
+			<property name="validateResponse" value="${WS.QUERY.INBOUND.VALIDATE.RESPONSE}" />
+		</bean>
+
+		<!-- References -->
+		<!-- Chapter 7. Securing your Web services with Spring-WS -->
+		<!-- http://static.springsource.org/spring-ws/sites/2.0/reference/html/security.html -->
+		<!-- 7.2 XwsSecurityInterceptor -->
+		<!-- http://static.springsource.org/spring-ws/sites/2.0/reference/html/security.html#security-xws-security-interceptor -->
+		<!-- What is the XWS-Security Framework? -->
+		<!-- http://download.oracle.com/docs/cd/E17802_01/webservices/webservices/docs/1.6/tutorial/doc/XWS-SecurityIntro4.html#wp564887 -->
+		<!-- Example of SOAP request authenticated with WS-UsernameToken -->
+		<!-- http://stackoverflow.com/questions/3448498/example-of-soap-request-authenticated-with-ws-usernametoken -->
+		<bean id="inboundWSSecurityInterceptor"
+			class="org.springframework.ws.soap.security.xwss.XwsSecurityInterceptor">
+			<property name="policyConfiguration" value="${WS.QUERY.INBOUND.POLICY.CONFIG.PATH}" />
+			<property name="callbackHandler" ref="ldapAuthenticationCallbackHandler" />
+		</bean>
+	</sws:interceptors>
+	
+	<oxm:jaxb2-marshaller id="queryMarshaller" contextPath="com.xxx.tsc.ws.schema.v1.query" />
+
+	<!-- <sws:dynamic-wsdl id="entitlements-v1.0" portTypeName="QueryEntitlements" -->
+	<!-- locationUri="/PWOWebServices/wsdl/query/"> -->
+	<!-- <sws:xsd location="classpath:pinacle-query-message-types-v1.0.xsd" /> -->
+	<!-- </sws:dynamic-wsdl> -->
+
+	<bean
+		class="org.springframework.ws.server.endpoint.mapping.UriEndpointMapping">
+		<property name="usePath" value="true" />
+		<property name="defaultEndpoint" ref="defaultWSGateway" />
+		<property name="mappings">
+			<props>
+				<prop key="${WS.QUERY.ENTITLEMENTS.URI}">entitlementsQueryServiceGateway</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="messageSender"
+		class="org.springframework.ws.transport.http.HttpComponentsMessageSender">
+		<!-- make these properties configurable in database -->
+		<property name="connectionTimeout" value="${WS.HTTPCLIENT.CONNECTION.TIMEOUT}" />
+		<property name="readTimeout" value="${WS.HTTPCLIENT.READ.TIMEOUT}" />
+	</bean>
+
+	<!-- Web Service Outbound Interceptors list: -->
+	<!-- + WS Security, -->
+	<!-- + Any custom interceptors for SOAP Headers -->
+	<bean id="outboundWSInterceptors" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="outboundWSSecurityInterceptor" />
+				<!-- Add references the custom interceptors -->
+				<!-- <ref bean="pwowsInterceptor" /> -->
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="outboundWSSecurityInterceptor"
+		class="org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor">
+		<property name="securementMustUnderstand" value="false" />
+		<property name="securementUsernameTokenElements" value="Nonce Created" />
+		<property name="securementActions" value="UsernameToken" />
+		<property name="securementPasswordType" value="PasswordDigest" />
+		<property name="securementUsername" value="${WS.SERVICE.USERNAME.PWOWS}" />
+		<property name="securementPassword" value="${WS.SERVICE.PASSWORD.PWOWS}" />
+	</bean>
+
+	<!-- Define Custom Interceptors for your application by implementing interface -->
+	<!-- org.springframework.ws.client.support.interceptor.ClientInterceptor -->
+	<!-- <bean id="pwowsInterceptor" class="com.xxx.tsc.ws.interceptor.PWOWebServiceInterceptor"> -->
+	<!-- <property name="propertyname" value="propertyvalues" /> -->
+	<!-- </bean> -->
+	
+</beans>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+	xmlns:int-ws="http://www.springframework.org/schema/integration/ws"
+	xmlns:sws="http://www.springframework.org/schema/web-services"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/xml http://www.springframework.org/schema/integration/xml/spring-integration-xml-2.2.xsd
+		http://www.springframework.org/schema/integration/ws http://www.springframework.org/schema/integration/ws/spring-integration-ws-2.2.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<int-ws:inbound-gateway id="defaultWSGateway"
+		request-channel="defaultRequestChannel" reply-channel="defaultReplyChannel" />
+
+	<int:channel id="defaultRequestChannel" />
+
+	<int:channel id="defaultReplyChannel" />
+
+	<int:service-activator input-channel="defaultWSRequestChannel"
+		ref="defaultQueryResponder" />
+
+	<bean id="defaultQueryResponder"
+		class="com.xxx.tsc.ws.query.serviceactivator.DefaultQueryServiceActivator" />
+
+	<int-ws:inbound-gateway id="entitlementsQueryServiceGateway"
+		request-channel="entitlementsQueryRequestChannel" reply-channel="entitlementsQueryReplyChannel"
+		marshaller="queryMarshaller" unmarshaller="queryMarshaller" />
+
+	<int:channel id="entitlementsQueryRequestChannel" />
+
+	<int:channel id="entitlementsQueryReplyChannel" />
+
+	<int:channel id="disbursementChannel" />
+
+	<int:channel id="disbursementReplyChannel">
+		<int:interceptors>
+			<int:wire-tap channel="pwowsLoggingChannel" />
+		</int:interceptors>
+	</int:channel>
+
+	<int:router id="entitlementQueryRouter" input-channel="entitlementsQueryRequestChannel"
+		ref="routerForEntitlmentQueryBasedOnService" method="routeEntitlementQueryRequest" />
+
+	<bean id="routerForEntitlmentQueryBasedOnService" class="com.xxx.tsc.ws.query.router.ServiceBasedRouter">
+		<property name="defaultServiceChannel" value="defaultRequestChannel" />
+		<property name="serviceChannelMap">
+			<map>
+				<entry key="824" value="disbursementChannel" />
+				<entry key="825" value="disbursementChannel" />
+				<entry key="826" value="disbursementChannel" />
+				<entry key="827" value="disbursementChannel" />
+			</map>
+		</property>
+	</bean>
+
+	<int-ws:outbound-gateway id="disbursementOutboundGateway"
+		request-channel="disbursementChannel" reply-channel="disbursementReplyChannel"
+		marshaller="queryMarshaller" unmarshaller="queryMarshaller"
+		message-sender="messageSender" interceptors="outboundWSInterceptors"
+		uri="${WS.DISB.QUERY.ENTITLEMENTS.URI}" />
+
+	<int:bridge id="disbursementBridgeToQueryResponse"
+		input-channel="disbursementReplyChannel" output-channel="entitlementsQueryReplyChannel" />
+
+	<!-- Message Logging -->
+	<int:channel id="pwowsLoggingChannel" />
+	<int:logging-channel-adapter id="pwowsLoggingChannelAdapter"
+		log-full-message="true" channel="pwowsLoggingChannel" level="DEBUG"
+		logger-name="com.xxx.tsc.ws.log.PWOWSSpringIntegrationLogger" />
+
+</beans>
