@@ -18,21 +18,27 @@ package com.mycompany.hr.ws;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import javax.servlet.http.HttpServletRequest;
 
-import com.mycompany.hr.service.HumanResourceService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.transport.context.TransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpServletConnection;
+
+import com.mycompany.hr.service.HumanResourceService;
 
 /**
  * This endpoint handles holiday requests. It uses a combination of JDOM and XPath to extract interesting pieces of XML
@@ -42,7 +48,7 @@ import org.jdom2.xpath.XPathFactory;
  */
 @Endpoint
 public class HolidayEndpoint {
-
+	private static final Log logger = LogFactory.getLog(HolidayEndpoint.class);
     private static final String NAMESPACE_URI = "http://mycompany.com/hr/schemas";
 
     private XPathExpression<Element> startDateExpression;
@@ -73,8 +79,18 @@ public class HolidayEndpoint {
         String name = firstNameExpression.evaluateFirst(holidayRequest).getText() + " " + lastNameExpression.evaluateFirst(holidayRequest).getText();
 
         humanResourceService.bookHoliday(startDate, endDate, name);
+        //ipAddressOfCurrentRequest();
     }
-
+    /**
+     * API to Print the request client IPAddress
+     */
+    private void ipAddressOfCurrentRequest(){
+    	TransportContext context = TransportContextHolder.getTransportContext();
+    	HttpServletConnection connection = (HttpServletConnection)context.getConnection();
+    	HttpServletRequest request = connection.getHttpServletRequest();
+    	String ipAddress = request.getRemoteAddr();
+    	logger.info(" Requested IP Address is : "+ ipAddress);
+    }
     private Date parseDate(XPathExpression<Element> expression, Element element) throws ParseException {
         Element result = expression.evaluateFirst(element);
         if (result != null) {
