@@ -18,7 +18,7 @@ import com.mycompany.hr.schemas.HolidayType;
 import com.mycompany.hr.schemas.ObjectFactory;
 
 public class HolidaySpringWSClient {
-	private static String URI = "http://localhost:8080/ws/holidayService/";
+	private static String URI = "http://localhost:8080/SpringWebService/holidayService/";
 	private static ApplicationContext context = null;
 	private static WebServiceTemplate wsGatewaySupport ;
 
@@ -40,7 +40,7 @@ public class HolidaySpringWSClient {
 		ObjectFactory factory = new ObjectFactory();
 		HolidayRequest holidayRequest = factory.createHolidayRequest();
 		EmployeeType employeeType = factory.createEmployeeType();
-		employeeType.setFirstName("Diyansha");
+		employeeType.setFirstName("Tanushree");
 		employeeType.setLastName("Rout");
 		employeeType.setNumber(new BigInteger("100"));
 

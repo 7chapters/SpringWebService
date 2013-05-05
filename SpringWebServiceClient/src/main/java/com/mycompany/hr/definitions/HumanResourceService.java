@@ -23,7 +23,7 @@ public class HumanResourceService
     static {
         URL url = null;
         try {
-            url = new URL("http://localhost:8080/ws/holiday.wsdl");
+            url = new URL("http://localhost:8080/SpringWebService/holiday.wsdl");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
