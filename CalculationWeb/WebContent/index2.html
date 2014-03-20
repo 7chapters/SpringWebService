@@ -1,0 +1,65 @@
+
+
+
+
+<html>
+<head>
+<title>Dynamically create input fields- jQuery</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript">
+/* 	$(function() {
+		var addDiv = $('#addinput');
+		var i = $('#addinput p').size() + 1;
+
+		$('#addNew')
+				.live(
+						'click',
+						function() {
+							$('<p><input type="text" id="p_new" size="40" name="p_new_' + i +'" value="" placeholder="I am New" /><a href="#" id="remNew">Remove</a> </p>')
+									.appendTo(addDiv);
+							i++;
+
+							return false;
+						});
+
+		$('#remNew').live('click', function() {
+			if (i > 2) {
+				$(this).parents('p').remove();
+				i--;
+			}
+			return false;
+		});
+	});
+	 */
+	$( document ).ready(function() {
+        $("#providersFormElementsTable").html("<tr><td>Nickname</td><td><input type='text' id='nickname' name='nickname'></td></tr><tr><td>CA Number</td><td><input type='text' id='account' name='account'></td></tr>").append(("<tr><td>Nickname</td><td><input type='text' id='nickname' name='nickname'></td></tr><tr><td>CA Number</td><td><input type='text' id='account' name='account'></td></tr>"));
+    });
+</script>
+
+</head>
+<body>
+	<form action="/SubmitWork">
+		Enter Name : <input type="text" name="name">
+		Date : <input type="text" name="date"><br>
+		
+	</form>
+	<div id="addinput">
+		<!-- <table>
+			<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+			<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+			<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+			<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+			<tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+		</table>
+		 -->
+ 	<table border="0" cellpadding="0" width="100%" id='providersFormElementsTable'> </table>		
+
+		<!-- <p>
+				<input type="text" id="p_new" size="20" name="p_new" value="" 
+				placeholder="Input Value" /><a href="#" id="addNew">Add</a>
+		</p> -->
+	</div>
+
+</body>
+</html>

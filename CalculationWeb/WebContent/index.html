@@ -1,0 +1,115 @@
+<html>
+<head>
+<title>Dynamically create input fields- jQuery</title>
+<style type="text/css">
+
+input , .button {
+    border: 5px solid white; 
+    -webkit-box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 10px rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 10px rgba(0,0,0,0.1); 
+    box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 10px rgba(0,0,0,0.1); 
+    padding: 3px;
+    background: rgba(255,255,255,0.5);
+    margin: 0 0 5px 0;
+}
+.redBackground {
+	background-color: red;
+}
+</style>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript">
+	$( document ).ready(function() {
+		$('#start').click(function(){
+			$(this).hide();
+			$('#dynamictable').append('<table></table>');
+			var table = $('#dynamictable').children();
+			 var randomArrayOne = generateRandomArray();
+			 
+			 for (var i = 1; i < 10 ; i++) {
+				 var row = $('<tr></tr>').appendTo(table);
+				 for (var j = 1; j < randomArrayOne.length; j++) {
+					 var td = $('<td></td>');
+					 td.html("<span class='button'>"+randomArrayOne[i]+"X"+j+"</span> <input type='text' name='"+(randomArrayOne[i]*j)+"'>").appendTo(row);
+				 }
+			 }
+		});
+		$('#validate').click(function(){
+			var allInputs = $(":input");
+			$('#dynamictable input').each(function(index,data) {
+				   var value = $(this).val();
+				   var name = $(this).attr("name");
+				   if(value != name){
+					   $( this ).addClass( "redBackground" );
+				   }
+				});
+		});
+		
+		function generateRandomArray() {
+			var array = new Array(10);
+			var randomNumbers = "";
+			var randomCount = 0;
+			for(var i = 0 ; i < 100 ; i++) {
+				var tempRandom = Math.floor((Math.random()*10)+1);
+				var found = false;
+				for (ii = 0; ii < array.length && !found; ii++) {
+				  if (array[ii] == tempRandom) {
+				    found = true; break;
+				  }
+				}
+				if(!found) {
+					array[randomCount++]  = tempRandom;	
+				}
+				if(randomCount == 10) {
+					break;
+				}
+			}
+			
+			return array;
+		}	
+    });
+	
+	function generateRandomArray() {
+		alert("");
+		/* var array = new Array(10);
+		var randomNumbers = "";
+		var randomCount = 0;
+		for(var i = 0 ; i < 100 ; i++) {
+			var tempRandom = Math.floor((Math.random()*10)+1);
+			var found = false;
+			for (ii = 0; ii < array.length && !found; ii++) {
+			  if (array[ii] == tempRandom) {
+			    found = true; break;
+			  }
+			}
+			if(!found) {
+				array[randomCount++]  = tempRandom;	
+			}
+			if(randomCount == 10) {
+				break;
+			}
+		}
+		
+		return array; */
+	}
+</script>
+
+</head>
+<body>
+	<form action="/SubmitWork">
+		Enter Name : <input type="text" name="name">
+		Date : <input type="text" name="date"><br>
+		<input id="start" type="button" name="Start" value="Start">
+		<div id="dynamictable">
+		</div>
+		<input id="validate" type="button" name="Validate" value="Validate">
+	</form>
+	
+</body>
+</html>
