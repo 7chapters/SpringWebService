@@ -1,44 +1,43 @@
 <html>
 <head>
 <title>Dynamically create input fields- jQuery</title>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 <style type="text/css">
+	.redBackground {
+		background-color: red;
+	}
 
-input , .button {
-    border: 5px solid white; 
-    -webkit-box-shadow: 
-      inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 10px rgba(0,0,0,0.1); 
-    -moz-box-shadow: 
-      inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 10px rgba(0,0,0,0.1); 
-    box-shadow: 
-      inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 10px rgba(0,0,0,0.1); 
-    padding: 3px;
-    background: rgba(255,255,255,0.5);
-    margin: 0 0 5px 0;
-}
-.redBackground {
-	background-color: red;
-}
 </style>
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+
 <script type="text/javascript">
 	$( document ).ready(function() {
-		$('#start').click(function(){
-			$(this).hide();
+		restart();		
+		function restart(){
+			var rangeFrom = parseInt($('#range_from').val());
+			var rangeTo = parseInt($('#range_to').val());
+
+			 var randomArrayOne = generateRandomArray(rangeFrom, rangeTo);
+			 var randomArrayTwo = generateRandomArray(2,10);
+			 
 			$('#dynamictable').append('<table></table>');
 			var table = $('#dynamictable').children();
-			 var randomArrayOne = generateRandomArray();
-			 
-			 for (var i = 1; i < 10 ; i++) {
+			 for (var one = 0; one < randomArrayOne.length ; one++) {
 				 var row = $('<tr></tr>').appendTo(table);
-				 for (var j = 1; j < randomArrayOne.length; j++) {
+				 for (var two = 0; two < randomArrayTwo.length ; two++) {
+					 
 					 var td = $('<td></td>');
-					 td.html("<span class='button'>"+randomArrayOne[i]+"X"+j+"</span> <input type='text' name='"+(randomArrayOne[i]*j)+"'>").appendTo(row);
-				 }
+					 var div = "<div class='input-group'>"+
+					  "<span class='input-group-addon'>"+randomArrayOne[one] +"X" + randomArrayTwo[two]+" =</span>"+
+					  "<input type='text' name='"+(randomArrayOne[one] * randomArrayTwo[two])+"' class='form-control' >"+
+					 "</div>";
+					 td.html(div).appendTo(row);
+				 } 
 			 }
+		}		 
+		$('#start').click(function(){
+			$('#dynamictable').empty();
+			restart();
 		});
 		$('#validate').click(function(){
 			var allInputs = $(":input");
@@ -46,17 +45,28 @@ input , .button {
 				   var value = $(this).val();
 				   var name = $(this).attr("name");
 				   if(value != name){
-					   $( this ).addClass( "redBackground" );
+					   $( this ).css( "border", "3px solid red" );
 				   }
 				});
 		});
 		
-		function generateRandomArray() {
-			var array = new Array(10);
+		function generateRandomArray(rangeFrom, rangeTo) {
+			
+			if(isNaN(rangeFrom) || isNaN(rangeTo)){
+				rangeFrom = 2;
+				rangeTo = 9;
+			}
+			if(rangeTo < rangeFrom){
+				alert("RangeTo Should be greater than RangeFrom");
+			}
+			var rangeDiff = parseInt(rangeTo-rangeFrom);
+			var array = new Array(rangeDiff+1);
 			var randomNumbers = "";
 			var randomCount = 0;
-			for(var i = 0 ; i < 100 ; i++) {
-				var tempRandom = Math.floor((Math.random()*10)+1);
+			for(var i = 0 ; i < 1000 ; i++) {
+				var tempRandom = Math.floor((Math.random()*rangeTo)+1);
+				if(tempRandom < rangeFrom || tempRandom > rangeTo) continue;
+				
 				var found = false;
 				for (ii = 0; ii < array.length && !found; ii++) {
 				  if (array[ii] == tempRandom) {
@@ -66,50 +76,48 @@ input , .button {
 				if(!found) {
 					array[randomCount++]  = tempRandom;	
 				}
-				if(randomCount == 10) {
+				if(randomCount == rangeDiff+1 ) {
 					break;
 				}
 			}
-			
 			return array;
 		}	
     });
-	
-	function generateRandomArray() {
-		alert("");
-		/* var array = new Array(10);
-		var randomNumbers = "";
-		var randomCount = 0;
-		for(var i = 0 ; i < 100 ; i++) {
-			var tempRandom = Math.floor((Math.random()*10)+1);
-			var found = false;
-			for (ii = 0; ii < array.length && !found; ii++) {
-			  if (array[ii] == tempRandom) {
-			    found = true; break;
-			  }
-			}
-			if(!found) {
-				array[randomCount++]  = tempRandom;	
-			}
-			if(randomCount == 10) {
-				break;
-			}
-		}
-		
-		return array; */
-	}
 </script>
 
 </head>
 <body>
 	<form action="/SubmitWork">
-		Enter Name : <input type="text" name="name">
-		Date : <input type="text" name="date"><br>
-		<input id="start" type="button" name="Start" value="Start">
+		<div align="center">
+		<table align="center">
+		  <tr>
+		    <td>Enter Name : </td>
+		    <td><input type="text" name="name" class='form-control' ></td>
+		  </tr>
+		  <tr>
+		    <td>Range From : </td>
+		    <td><input type="text" id="range_from" placeholder="1-100">To <input type="text" id="range_to" placeholder="1-100"></td>
+		  </tr>
+		  
+		</table>
+			
+		</div>
+		
+		<div align="center" > 
+			<table>
+				<tr>
+				  <td>
+				  <button id="start" type="button" class="btn btn-default navbar-btn">Restart</button>
+				  </td>
+				  <td width="40px"></td>
+				  <td>
+				  <button id="validate" type="button" class="btn btn-default navbar-btn">Validate</button>
+				  </td>
+			  </tr>
+			</table>
+		</div>
 		<div id="dynamictable">
 		</div>
-		<input id="validate" type="button" name="Validate" value="Validate">
 	</form>
-	
 </body>
 </html>
