@@ -18,13 +18,25 @@
 			var rangeTo = parseInt($('#range_to').val());
 
 			 var randomArrayOne = generateRandomArray(rangeFrom, rangeTo);
-			 var randomArrayTwo = generateRandomArray(2,10);
+			 var randomArrayTwo = generateRandomArray(2,9);
 			 
 			$('#dynamictable').append('<table></table>');
 			var table = $('#dynamictable').children();
+			var tdCount = 0;
+			var createTD = true;
+			var row;
 			 for (var one = 0; one < randomArrayOne.length ; one++) {
-				 var row = $('<tr></tr>').appendTo(table);
 				 for (var two = 0; two < randomArrayTwo.length ; two++) {
+					 if(createTD) {
+						 row = $('<tr></tr>').appendTo(table);	 
+						 createTD = false;
+					 }
+
+					 tdCount++;
+					 if(tdCount == 6 ){
+						 createTD = true;
+						 tdCount = 0;
+					 }
 					 
 					 var td = $('<td></td>');
 					 var div = "<div class='input-group'>"+
@@ -40,12 +52,15 @@
 			restart();
 		});
 		$('#validate').click(function(){
+			
 			var allInputs = $(":input");
 			$('#dynamictable input').each(function(index,data) {
 				   var value = $(this).val();
 				   var name = $(this).attr("name");
 				   if(value != name){
-					   $( this ).css( "border", "3px solid red" );
+					   $( this ).css( "background-color", "#d9534f" );
+				   }else {
+					   $( this ).css( "background-color", "#A0E2A3" );
 				   }
 				});
 		});
@@ -88,35 +103,36 @@
 </head>
 <body>
 	<form action="/SubmitWork">
+		<div style="margin-top: 1%;"></div>
 		<div align="center">
-		<table align="center">
-		  <tr>
-		    <td>Enter Name : </td>
-		    <td><input type="text" name="name" class='form-control' ></td>
-		  </tr>
-		  <tr>
-		    <td>Range From : </td>
-		    <td><input type="text" id="range_from" placeholder="1-100">To <input type="text" id="range_to" placeholder="1-100"></td>
-		  </tr>
-		  
-		</table>
-			
+			<table align="center" >
+			  <tr>
+			    <td><span class='input-group-addon'>Enter Name</span></td>
+			    <td><input type="text" name="name" class='form-control' ></td>
+			  </tr>
+			  <tr>
+			    <td><span class='input-group-addon'>Range From</span></td>
+			    <td><input type="text" id="range_from" placeholder="1-100">To <input type="text" id="range_to" placeholder="1-100"></td>
+			  </tr>
+			</table>
 		</div>
 		
+		<div style="margin-top: 1%;"></div>
+		<div id="dynamictable" style="margin-left: 2%; margin-right: 2%;" align="center">
+		</div>
+		<div style="margin-top: 1%;"/>
 		<div align="center" > 
 			<table>
 				<tr>
 				  <td>
-				  <button id="start" type="button" class="btn btn-default navbar-btn">Restart</button>
+				  <button id="start" type="button" class="btn btn-primary" >Restart</button>
 				  </td>
 				  <td width="40px"></td>
 				  <td>
-				  <button id="validate" type="button" class="btn btn-default navbar-btn">Validate</button>
+				  <button id="validate" type="button" class="btn btn-danger">Validate</button>
 				  </td>
 			  </tr>
 			</table>
-		</div>
-		<div id="dynamictable">
 		</div>
 	</form>
 </body>
