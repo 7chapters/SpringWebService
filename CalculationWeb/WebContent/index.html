@@ -3,16 +3,35 @@
 <title>Dynamically create input fields- jQuery</title>
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="js/stopwatch.js"></script>
+<script type="text/javascript" src="js/randomArrayGenerator.js"></script>
 <style type="text/css">
 	.redBackground {
 		background-color: red;
 	}
+/* input {
+    padding:4px;}
+ */
+/* 
+input[type="text"] {
+    width:50px;
+    text-align:center;}    
+ */
+
+div span:last-child {
+color:green;}
+
+h1 {
+    font-size:14px;
+    margin:0 0 8px 0;
+}
 
 </style>
 
 <script type="text/javascript">
-	$( document ).ready(function() {
-		restart();		
+$( document ).ready(function() {
+
+		restart();
 		function restart(){
 			var rangeFrom = parseInt($('#range_from').val());
 			var rangeTo = parseInt($('#range_to').val());
@@ -46,13 +65,15 @@
 					 td.html(div).appendTo(row);
 				 } 
 			 }
-		}		 
-		$('#start').click(function(){
+		}
+		
+		$('#reset_table').click(function(){
 			$('#dynamictable').empty();
+			$.APP.startTimer('sw');
 			restart();
 		});
 		$('#validate').click(function(){
-			
+			$.APP.stopTimer();
 			var allInputs = $(":input");
 			$('#dynamictable input').each(function(index,data) {
 				   var value = $(this).val();
@@ -64,39 +85,6 @@
 				   }
 				});
 		});
-		
-		function generateRandomArray(rangeFrom, rangeTo) {
-			
-			if(isNaN(rangeFrom) || isNaN(rangeTo)){
-				rangeFrom = 2;
-				rangeTo = 9;
-			}
-			if(rangeTo < rangeFrom){
-				alert("RangeTo Should be greater than RangeFrom");
-			}
-			var rangeDiff = parseInt(rangeTo-rangeFrom);
-			var array = new Array(rangeDiff+1);
-			var randomNumbers = "";
-			var randomCount = 0;
-			for(var i = 0 ; i < 1000 ; i++) {
-				var tempRandom = Math.floor((Math.random()*rangeTo)+1);
-				if(tempRandom < rangeFrom || tempRandom > rangeTo) continue;
-				
-				var found = false;
-				for (ii = 0; ii < array.length && !found; ii++) {
-				  if (array[ii] == tempRandom) {
-				    found = true; break;
-				  }
-				}
-				if(!found) {
-					array[randomCount++]  = tempRandom;	
-				}
-				if(randomCount == rangeDiff+1 ) {
-					break;
-				}
-			}
-			return array;
-		}	
     });
 </script>
 
@@ -109,23 +97,41 @@
 			  <tr>
 			    <td><span class='input-group-addon'>Enter Name</span></td>
 			    <td><input type="text" name="name" class='form-control' ></td>
+			    <td width="70px;"></td>
+			    <td>
+			    <!-- <span class='input-group-addon'>Stopwatch</span> -->
+			    <!-- <button id="sw_start" type="button" class="btn btn-primary" >Start</button> -->
+			    </td>
 			  </tr>
 			  <tr>
 			    <td><span class='input-group-addon'>Range From</span></td>
 			    <td><input type="text" id="range_from" placeholder="1-100">To <input type="text" id="range_to" placeholder="1-100"></td>
+			    <td width="70px;"></td>
+			    <td>		    
+			    <div class="btn-group">
+				  <!-- <button type="button" class="btn btn-default btn-sm" id="sw_h">00</button> -->
+				  <button type="button" class="btn btn-default btn-sm" style="background-color: #CCFFCC;" id="sw_m">00</button>
+				  <button type="button" class="btn btn-default btn-sm" style="background-color: #CCFFCC;" id="sw_s">00</button>
+				  <button type="button" class="btn btn-default btn-sm" style="background-color: #CCFFCC;" id="sw_ms">00</button>
+				</div>
+			    	<!-- <span class='input-group-addon' id="sw_h">00</span>:
+				    <span class='input-group-addon' id="sw_m">00</span>:
+				    <span class='input-group-addon' id="sw_s">00</span>:
+				    <span class='input-group-addon' id="sw_ms">00</span> -->
+				</td>
 			  </tr>
 			</table>
 		</div>
 		
 		<div style="margin-top: 1%;"></div>
-		<div id="dynamictable" style="margin-left: 2%; margin-right: 2%;" align="center">
+		<div id="dynamictable" style="margin-left: 5%; margin-right: 5%;" align="center">
 		</div>
-		<div style="margin-top: 1%;"/>
+		<div style="margin-top: 1%;"></div>
 		<div align="center" > 
 			<table>
 				<tr>
 				  <td>
-				  <button id="start" type="button" class="btn btn-primary" >Restart</button>
+				  <button id="reset_table" type="button" class="btn btn-primary" >Reset</button>
 				  </td>
 				  <td width="40px"></td>
 				  <td>
@@ -134,6 +140,21 @@
 			  </tr>
 			</table>
 		</div>
+		
+		<!-- <div>
+		    <h1>Stopwatch</h1>
+		    <span id="sw_h">00</span>:
+		    <span id="sw_m">00</span>:
+		    <span id="sw_s">00</span>:
+		    <span id="sw_ms">00</span>
+		    <br/>
+		    <input type="button" value="Start" id="sw_start" />
+		    <input type="button" value="Pause" id="sw_pause" />
+		    <input type="button" value="Stop"  id="sw_stop" />
+		    <input type="button" value="Reset" id="sw_reset" />
+		    <br/>
+		    <span id="sw_status">Idle</span>
+		</div> -->
 	</form>
 </body>
 </html>
